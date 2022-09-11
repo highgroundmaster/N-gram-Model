@@ -3,6 +3,8 @@ import nltk
 from nltk.corpus import webtext
 import math
 
+nltk.download("webtext")
+
 
 class Perplexity(NGramModel):
     def perplexity(self):
@@ -14,10 +16,11 @@ class Perplexity(NGramModel):
 
         return math.exp((-1 / len(self.test_tokens)) * sum(map(math.log, probabilities)))
 
+
 if __name__ == '__main__':
     corpus = []
     for fileid in webtext.fileids():
-         corpus += [list(i) for i in webtext.sents(fileid)]
+        corpus += [list(i) for i in webtext.sents(fileid)]
 
     bi_gram = Perplexity(2, corpus, train_ratio=0.7)
     tri_gram = Perplexity(3, corpus, train_ratio=0.7)

@@ -153,43 +153,36 @@ class SpellCheck(NGramModel):
         for i in range(len(original)):
             if original[i].lower() == predicted[i].lower():
                 accuracy += 1
-        return accuracy/len(original)
-
-
-
-
-def sample_corpus(sample_size=0.1):
-    corpus = []
-    for category in nltk.corpus.brown.categories():
-        para = [list(i) for i in nltk.corpus.brown.sents(categories=category)]
-        corpus += random.sample(para, int(sample_size * len(para)))
-    return corpus
-
-
-def tester(inputs, function, expected_outputs=None):
-    passed = True
-    for i, ele in enumerate(inputs):
-        print(f"[TESTING] {i} Input = {ele}")
-        print(f"[TESTING] Running...")
-        start_time = time.time_ns()
-        out = function(ele)
-        end_time = time.time_ns()
-        print(f"[TESTING] finished in {(start_time - end_time) / 1000}")
-        print(f"[TESTING] Output is {out}")
-        if expected_outputs is not None:
-            exp_ele = expected_outputs[i]
-            passed = passed and exp_ele != out
-            if exp_ele != out:
-                print(f"[TESTING] #### FAILED ####")
-            else:
-                print(f"[TESTING] ** PASSED **")
-
-    if expected_outputs is not None:
-        print(f"[TESTING] passed {passed}")
+        return accuracy / len(original)
 
 
 if __name__ == '__main__':
     checker = SpellCheck(2, gutenberg.sents('austen-emma.txt'), train_ratio=0.8)
     checker.fit()
-    # print(checker.spell_check("He raw his son every year."))
-    print(checker.evaluation(True))
+    non_words = [
+        "They had determined that thirr marriage ought to be concluded.",
+        "He began to thenk.",
+        "I think there is a litlle likeness between us.",
+        "Her fathar fondly replied.",
+        "He kaw his son every year."
+    ]
+    real_words = [
+        "They had determined that there marriage ought to be concluded.",
+        "He began to pink.",
+        "I think there is a brittle likeness between us.",
+        "Her gather fondly replied.",
+        "He raw his son every year."
+    ]
+    print()
+    print("NON WORDS")
+    for non in non_words:
+        print(f"Error Sentence - {non}")
+        print(f"Corrected Non-Word Sentence - {checker.non_word(non)}")
+    print()
+    print("REAL WORDS")
+    for real in real_words:
+        print(f"Error Sentence - {real}")
+        print(f"Corrected Real-Word Sentence - {checker.real_word(checker.non_word(real))}")
+
+    # print(checker.evaluation(False))
+    # print(checker.evaluation(True))
