@@ -60,15 +60,6 @@ def tokenize(data: string) -> list:
     # if shape == 1:
     return [word_preprocess(token) for token in nltk.word_tokenize(data)
             if all(punct != token for punct in string.punctuation)]
-    # tokens = []
-    # start, end = 0, 0
-    # for index, token in enumerate(pre_tokens):
-    #
-    #     if token == "." or token.endswith("."):
-    #         end = index
-    #         tokens.append(pre_tokens[start:end])
-    #         start = index + 1
-    # return tokens
 
 
 def word_preprocess(word: string) -> string:
@@ -86,24 +77,7 @@ def split_sentences(data: list) -> list:
             for new_token in new_tokens:
                 if len(new_token) != 1:
                     sent.append(new_token)
-            if token == "." and sentence[index - 1]  not in ["Mr", "Ms", "Mrs", "Dr", "Prof"]:
+            if token == "." and sentence[index - 1] not in ["Mr", "Ms", "Mrs", "Dr", "Prof"]:
                 tokens.append(sent)
                 sent = []
     return tokens
-
-    # for index, token in enumerate(data):
-    #     tag = nltk.pos_tag([token])
-
-
-if __name__ == '__main__':
-    # tokenizer = RegexpTokenizer(r'\w+')
-    # print(tokenizer.tokenize("September-October"))
-    # print(split_sentences(brown.sents(categories='news')[:5]))
-    from nltk.tokenize import TweetTokenizer
-    tknzr = TweetTokenizer()
-    # print(nltk.pos_tag(brown.words(categories='news')[:15]))
-#     print(brown.words(categories='news')[:30])
-#     with open("split.json", "w") as f:
-#         json.dump(split_sentences(brown.words(categories='news')), f, indent= 4)
-#     with open("brown.json", "w") as f:
-#         json.dump(list(brown.words(categories='news')), f)
