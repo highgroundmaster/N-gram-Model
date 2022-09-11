@@ -3,7 +3,7 @@ from tqdm import tqdm
 from language_model import NGramModel
 import nltk
 from nltk.tokenize import RegexpTokenizer
-from nltk.corpus import stopwords, brown, gutenberg
+from nltk.corpus import gutenberg
 import random
 import time
 import json
@@ -108,15 +108,16 @@ class SpellCheck(NGramModel):
     def real_word_error(self, word):
         error = random.choices([0, 1], weights=[0.8, 0.2])[0]
         candidates = list(self.get_candidates(word)[error])
-        return random.choice(candidates)
+        if len(candidates):
+            return random.choice(candidates)
+        return word
 
     def evaluation(self, is_real=False):
         eval = []
         accuracy = 0
         name = "real-word.json" if is_real else "non-word.json"
         for sent in tqdm(self.test_tokens, desc="Spell Check Evaluation"):
-            result = {}
-            result["Original Sentence"] = " ".join(sent)
+            result = {"Original Sentence": " ".join(sent)}
             if sent:
                 token = random.choice([tok for tok in sent if len(tok) > 2])
                 if not is_real:
@@ -140,7 +141,6 @@ class SpellCheck(NGramModel):
                         nltk.word_tokenize(result["Real-Word Sentence"])
                     )
                     accuracy += result["Accuracy"]
-                    print(result)
                     eval.append(result)
 
         with open(name, "w") as f:
@@ -151,7 +151,7 @@ class SpellCheck(NGramModel):
     def accuracy(self, original, predicted):
         accuracy = 0
         for i in range(len(original)):
-            if original[i].lower() == predicted[i].lower() :
+            if original[i].lower() == predicted[i].lower():
                 accuracy += 1
         return accuracy/len(original)
 
