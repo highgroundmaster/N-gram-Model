@@ -84,9 +84,9 @@ def split_sentences(data: list) -> list:
         for index, token in enumerate(sentence):
             new_tokens = tokenizer.tokenize(token)
             for new_token in new_tokens:
-                if len(new_token) == 1:
+                if len(new_token) != 1:
                     sent.append(new_token)
-            if token == ".":
+            if token == "." and sentence[index - 1]  not in ["Mr", "Ms", "Mrs", "Dr", "Prof"]:
                 tokens.append(sent)
                 sent = []
     return tokens
@@ -98,7 +98,9 @@ def split_sentences(data: list) -> list:
 if __name__ == '__main__':
     # tokenizer = RegexpTokenizer(r'\w+')
     # print(tokenizer.tokenize("September-October"))
-    print(split_sentences(brown.sents(categories='news')[:5]))
+    # print(split_sentences(brown.sents(categories='news')[:5]))
+    from nltk.tokenize import TweetTokenizer
+    tknzr = TweetTokenizer()
     # print(nltk.pos_tag(brown.words(categories='news')[:15]))
 #     print(brown.words(categories='news')[:30])
 #     with open("split.json", "w") as f:
