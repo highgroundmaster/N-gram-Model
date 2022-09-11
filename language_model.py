@@ -1,14 +1,11 @@
 # TODO - Progress Bar
-# TODO - Unigram Dont Remove Stop Words
-
-
+from tqdm import tqdm
 import random
-import pandas as pd
-import matplotlib.pyplot as plt
 from tokenization import split_sentences
 import nltk
-from nltk.corpus import stopwords, brown
+from nltk.corpus import wordnet
 from itertools import chain
+from nltk.tokenize import RegexpTokenizer
 
 class NGramModel():
     """
@@ -32,6 +29,7 @@ class NGramModel():
         self.n_grams = []
         self.vocab = None
         self.unique_words = set(chain.from_iterable(self.tokens))
+        self.model = None
 
     def train_test_split(self, train_ratio):
         random.shuffle(self.tokens)
@@ -70,17 +68,19 @@ class NGramModel():
         Returns:
             A dict mapping each n-gram (tuple of str) to its probability (float).
         """
-        for sentence in self.train_tokens:
+        for sentence in tqdm(self.train_tokens, desc="Fitting the Model"):
             self.n_grams += list(nltk.ngrams(sentence, self.n))
         self.vocab = nltk.FreqDist(self.n_grams)
 
         if self.n == 1:
             num_tokens = len(self.vocab)
-            return {unigram: count / num_tokens for unigram, count in self.vocab.items()}
+            self.model = {unigram: count / num_tokens for unigram, count in self.vocab.items()}
         else:
-            return self._smooth()
+            self.model = self._smooth()
 
+    def probability(self, sentence):
+        tokenizer = RegexpTokenizer(r'\w+')
+        tokens = tokenizer.tokenize(sentence)
+        n_grams = list(nltk.ngrams(tokens, self.n))
+        return sum([self.model.get(n_gram, 0) for n_gram in n_grams])
 
-if __name__ == '__main__':
-    BiGram = NGramModel(3, brown.sents(categories='news'))
-    model = BiGram.fit()
