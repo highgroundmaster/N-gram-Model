@@ -84,7 +84,7 @@ def split_sentences(data: list) -> list:
         for index, token in enumerate(sentence):
             new_tokens = tokenizer.tokenize(token)
             for new_token in new_tokens:
-                if len(new_token) == 1:
+                if len(new_token) != 1:
                     sent.append(new_token)
             if token == ".":
                 tokens.append(sent)
