@@ -3,18 +3,13 @@ from tqdm import tqdm
 import random
 from tokenization import split_sentences
 import nltk
-from nltk.corpus import wordnet
 from itertools import chain
 from nltk.tokenize import RegexpTokenizer
 
+
 class NGramModel():
     """
-    An n-gram language model trained on a given corpus.
-
-    For a given n and given corpus, constructs an n-gram language model
-    Includes
-    Laplace Smoothing
-    Perplexity Calculation
+    N-Gram Model with Laplace Smoothing
     Args:
         corpus (list of str): list of sentences comprising the training corpus.
         n (int): the order of language model to build (i.e. 1 for unigram, 2 for bigram, etc.).
@@ -37,10 +32,8 @@ class NGramModel():
         return self.tokens[:index], self.tokens[index:]
 
     def _smooth(self):
-        """Apply Laplace smoothing to n-gram frequency distribution.
-
-        Here, n_grams refers to the n-grams of the tokens in the training corpus,
-        while m_grams refers to the first (n-1) tokens of each n-gram.
+        """
+        Laplace smoothing
         Returns:
             dict: Mapping of each n-gram (tuple of str) to its Laplace-smoothed
             probability (float).
@@ -60,11 +53,10 @@ class NGramModel():
         return {n_gram: smoothed_count(n_gram, count) for n_gram, count in self.vocab.items()}
 
     def fit(self):
-        """Create a probability distribution for the vocabulary of the training corpus.
+        """
+        Create a probability distribution for the vocabulary of the training corpus with smoothing.
 
-        If building a unigram model, the probabilities are simple relative frequencies
-        of each token with the entire corpus.
-        Otherwise, the probabilities are Laplace-smoothed relative frequencies.
+        Unigram model no laplace smoothing
         Returns:
             A dict mapping each n-gram (tuple of str) to its probability (float).
         """
@@ -83,4 +75,3 @@ class NGramModel():
         tokens = tokenizer.tokenize(sentence)
         n_grams = list(nltk.ngrams(tokens, self.n))
         return sum([self.model.get(n_gram, 0) for n_gram in n_grams])
-
